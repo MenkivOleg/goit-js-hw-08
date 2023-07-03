@@ -40,6 +40,6 @@ const gallery = new SimpleLightbox('.gallery__item a', {
   captionDelay: 250,
   captionsData: 'alt',
   captionPosition: 'top',
-});
+}); 
 
 
