@@ -4,43 +4,42 @@ const form = document.querySelector('.feedback-form');
 const emailInput = form.querySelector('input[name="email"]');
 const messageInput = form.querySelector('textarea[name="message"]');
 
-const saveFormState = throttle(() => {
-  const formState = {
+form.addEventListener('input', throttle(handleFormInput, 500));
+
+document.addEventListener('DOMContentLoaded', () => {
+  const formData = JSON.parse(localStorage.getItem('feedback-form-state'));
+  if (formData) {
+    emailInput.value = formData.email;
+    messageInput.value = formData.message;
+  }
+});
+
+form.addEventListener('submit', handleSubmit);
+
+function handleFormInput() {
+  const formData = {
     email: emailInput.value,
     message: messageInput.value,
   };
-  localStorage.setItem('feedback-form-state', JSON.stringify(formState));
-}, 500);
+  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+}
 
-const loadFormState = () => {
-  const savedFormState = localStorage.getItem('feedback-form-state');
-  if (savedFormState) {
-    const formState = JSON.parse(savedFormState);
-    emailInput.value = formState.email;
-    messageInput.value = formState.message;
-  }
-};
-
-const clearFormState = () => {
-  localStorage.removeItem('feedback-form-state');
-  emailInput.value = '';
-  messageInput.value = '';
-};
-
-form.addEventListener('submit', event => {
+function handleSubmit(event) {
   event.preventDefault();
 
-  const isEmailFilled = emailInput.value.trim() !== '';
-  const isMessageFilled = messageInput.value.trim() !== '';
+  const emailValue = emailInput.value.trim();
+  const messageValue = messageInput.value.trim();
 
-  if (isEmailFilled && isMessageFilled) {
-    const formState = {
-      email: emailInput.value,
-      message: messageInput.value,
-    };
-    console.log(formState);
-    clearFormState();
+  if (emailValue === '' || messageValue === '') {
+    alert('Please fill all inputs');
   } else {
-    alert('Будь ласка, заповніть обидва поля');
+    const formData = {
+      email: emailValue,
+      message: messageValue,
+    };
+    console.log('Data:', formData);
+
+    localStorage.removeItem('feedback-form-state');
+    form.reset();
   }
-});
+}
